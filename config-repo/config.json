@@ -1,0 +1,141 @@
+{
+  "version": "1.0.0",
+  "updatedAt": "2026-10-01T00:00:00Z",
+  "prerequisites": [
+    {
+      "id": "homebrew",
+      "label": "Homebrew",
+      "platform": "darwin",
+      "versionCmd": "brew --version",
+      "versionRegex": "(\\d+\\.\\d+\\.\\d+)",
+      "minVersion": "4.0.0",
+      "fixCmd": "/bin/bash -c \"$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)\""
+    },
+    {
+      "id": "nvm",
+      "label": "nvm (Node Version Manager)",
+      "platform": "darwin",
+      "versionCmd": "nvm --version",
+      "versionRegex": "(\\d+\\.\\d+\\.\\d+)",
+      "minVersion": "0.39.0",
+      "fixCmd": "curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash"
+    },
+    {
+      "id": "node",
+      "label": "Node.js",
+      "platform": "darwin",
+      "versionCmd": "node --version",
+      "versionRegex": "v?(\\d+\\.\\d+\\.\\d+)",
+      "minVersion": "20.0.0",
+      "fixCmd": "nvm install 20 && nvm alias default 20"
+    },
+    {
+      "id": "git",
+      "label": "Git",
+      "platform": "darwin",
+      "versionCmd": "git --version",
+      "versionRegex": "(\\d+\\.\\d+\\.\\d+)",
+      "minVersion": "2.30.0",
+      "fixCmd": "brew install git"
+    },
+    {
+      "id": "xcode-clt",
+      "label": "Xcode Command Line Tools",
+      "platform": "darwin",
+      "versionCmd": "pkgutil --pkg-info=com.apple.pkg.CLTools_Executables",
+      "versionRegex": "version:\\s*(\\d+\\.\\d+)",
+      "minVersion": "14.0.0",
+      "fixCmd": "xcode-select --install"
+    },
+    {
+      "id": "docker",
+      "label": "Docker",
+      "platform": "darwin",
+      "versionCmd": "docker --version",
+      "versionRegex": "(\\d+\\.\\d+\\.\\d+)",
+      "minVersion": "24.0.0",
+      "fixCmd": "brew install --cask docker"
+    }
+  ],
+  "projects": [
+    {
+      "id": "sample-api",
+      "name": "Sample API",
+      "requiredTools": [
+        {
+          "id": "node-18",
+          "label": "Node.js (this project requires ≥18)",
+          "platform": "darwin",
+          "versionCmd": "node --version",
+          "versionRegex": "v?(\\d+\\.\\d+\\.\\d+)",
+          "minVersion": "18.0.0",
+          "fixCmd": "nvm install 18 && nvm alias default 18"
+        }
+      ],
+      "steps": [
+        {
+          "id": "clone",
+          "label": "Clone repository",
+          "cmd": "git clone git@github.com:your-org/sample-api.git ~/dev/sample-api"
+        },
+        {
+          "id": "install",
+          "label": "Install dependencies",
+          "cmd": "npm install",
+          "cwd": "~/dev/sample-api"
+        },
+        {
+          "id": "env",
+          "label": "Copy env file",
+          "cmd": "cp .env.example .env",
+          "cwd": "~/dev/sample-api"
+        }
+      ]
+    },
+    {
+      "id": "sample-web",
+      "name": "Sample Web App",
+      "steps": [
+        {
+          "id": "clone",
+          "label": "Clone repository",
+          "cmd": "git clone git@github.com:your-org/sample-web.git ~/dev/sample-web"
+        },
+        {
+          "id": "install",
+          "label": "Install dependencies",
+          "cmd": "npm install",
+          "cwd": "~/dev/sample-web"
+        },
+        {
+          "id": "env",
+          "label": "Copy env file",
+          "cmd": "cp .env.example .env",
+          "cwd": "~/dev/sample-web"
+        }
+      ]
+    }
+  ],
+  "scripts": [
+    {
+      "id": "flush-dns",
+      "label": "Flush local DNS cache",
+      "description": "Generic utility — doesn't need a specific path. Handy after switching networks/VPNs.",
+      "platform": "darwin",
+      "script": "sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder"
+    },
+    {
+      "id": "sample-api-reset-db",
+      "label": "Reset Sample API's local database",
+      "description": "Runs inside the Sample API checkout — drops and re-seeds the local dev database.",
+      "cwd": "~/dev/sample-api",
+      "script": [
+        "echo 'Resetting local database...'",
+        "npm run db:drop",
+        "npm run db:migrate",
+        "npm run db:seed",
+        "echo 'Done.'"
+      ]
+    }
+  ]
+}
